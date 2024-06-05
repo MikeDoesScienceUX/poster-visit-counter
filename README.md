@@ -1,7 +1,7 @@
 # Scientific Poster Visit Counter
 
 ## Purpose
-The purpose of this project is to create a device that counts entrances and exits to a row of scientific posters, as well as visits to individual scientific posters during poster sessions.
+The purpose of this project is to create an open hardware, open source device that counts entrances and exits to a row of scientific posters, as well as visits to individual scientific posters during poster sessions.
 
 ## Table of Contents
 1. [Introduction](#introduction)
