@@ -36,7 +36,7 @@ void setup() {
   display.setTextSize(2);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(10, 10);
-  display.println(F("posterbot"));
+  display.println(F("Poster Counter"));
   display.display();
   delay(5000); // Pause for 5 seconds
   updateDisplay();
