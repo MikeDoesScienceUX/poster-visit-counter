@@ -36,11 +36,7 @@ void setup() {
   display.setTextSize(2);
   display.setTextColor(SSD1306_WHITE);
   display.setCursor(10, 10);
-  display.println(F("poster buddy"));
-  display.drawRect(60, 30, 30, 30, SSD1306_WHITE); // Head
-  display.drawCircle(70, 40, 3, SSD1306_WHITE); // Left eye
-  display.drawCircle(90, 40, 3, SSD1306_WHITE); // Right eye
-  display.drawRect(75, 50, 10, 5, SSD1306_WHITE); // Mouth
+  display.println(F("posterbot"));
   display.display();
   delay(5000); // Pause for 5 seconds
   updateDisplay();
