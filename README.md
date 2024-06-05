@@ -23,7 +23,7 @@ This project aims to provide an open hardware solution for tracking the number o
 ## Hardware Requirements
 - Arduino
 - Extension board
-- Sonar sensor
+- Sonar sensor (could also use radar or other sensors)
 - Battery
 - OLED screen
 
