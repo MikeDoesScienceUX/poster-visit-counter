@@ -29,23 +29,18 @@ This project aims to provide an open hardware solution for tracking the number o
 - OLED screen
 
 ## Assembly Instructions
-**Note:** Add images or diagrams in the placeholders below for better clarity.
 
 1. **Connect the Sonar Sensor**
    - Connect the sonar sensor to the extension board.
-   - ![Sonar Sensor Connection](link-to-image)
 
 2. **Attach the OLED Screen**
    - Connect the OLED screen to the extension board.
-   - ![OLED Screen Connection](link-to-image)
 
 3. **Power the Device**
    - Connect the battery to the Arduino and extension board.
-   - ![Battery Connection](link-to-image)
 
 4. **Mount the Components**
    - Assemble the components in a suitable enclosure or mount them on a board.
-   - ![Final Assembly](link-to-image)
 
 ## Software Setup
 1. **Install Arduino IDE**
