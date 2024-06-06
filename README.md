@@ -2,6 +2,7 @@
 
 ## Purpose
 The purpose of this project is to create an open hardware, open source device that counts entrances and exits to a row of scientific posters, as well as visits to individual scientific posters during poster sessions.
+![poster-visit-counter-on-partition](https://github.com/MikeDoesScienceUX/poster-visit-counter/assets/40181678/bea2f5ac-954a-4a4c-96b9-36b97e05b9d6)
 
 ## Table of Contents
 1. [Introduction](#introduction)
