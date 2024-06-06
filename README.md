@@ -29,7 +29,7 @@ This project aims to provide an open hardware solution for tracking the number o
 - OLED screen
 
 ## Assembly Instructions
-
+![image](https://github.com/MikeDoesScienceUX/poster-visit-counter/assets/40181678/1f7337cd-c5f1-4e6b-a0dc-f17f42b32c38)
 1. **Connect the Sonar Sensor**
    - Connect the sonar sensor to the extension board.
 
