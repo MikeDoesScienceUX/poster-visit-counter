@@ -62,7 +62,7 @@ This project aims to provide an open hardware solution for tracking the number o
    - Place the device at the entrance of the poster row and near individual posters as needed.
 
 3. **Monitor the Visits**
-   - The OLED screen will display the count of entrances, exits, and visits to individual posters.
+   - The OLED screen will display the count of people walking past in either direction, which can be used at the end of rows or to track visits to individual posters.
 
 ## License
 This project is licensed under the [Open Hardware License](link-to-license).
