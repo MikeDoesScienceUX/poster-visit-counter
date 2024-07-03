@@ -1,92 +1,119 @@
+#include <NewPing.h>
 #include <SPI.h>
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+#include <SD.h>
 
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+// Pins for ultrasonic sensors
+#define TRIGGER_PIN_LEFT 7
+#define ECHO_PIN_LEFT 6
+#define TRIGGER_PIN_RIGHT 9
+#define ECHO_PIN_RIGHT 8
 
-#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
-#define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+// Pin for SD card chip select
+#define SD_CS 10
 
-// Ultrasonic sensor pins
-#define TRIG_PIN 9
-#define ECHO_PIN 8
+// Onboard LED pin
+#define LED_PIN LED_BUILTIN
 
-// Enter/Exit counts
-int enterCount = 0;
-int exitCount = 0;
-bool objectDetected = false;
-bool previousObjectDetected = false;
+// SD file
+File logFile;
+
+// NewPing setup for ultrasonic sensors
+NewPing sonarLeft(TRIGGER_PIN_LEFT, ECHO_PIN_LEFT, 200); // Maximum distance set to 200 cm
+NewPing sonarRight(TRIGGER_PIN_RIGHT, ECHO_PIN_RIGHT, 200);
+
+int peopleCount = 0;
+unsigned long lastLeftTrigger = 0;
+unsigned long lastRightTrigger = 0;
 
 void setup() {
   Serial.begin(9600);
-  pinMode(TRIG_PIN, OUTPUT);
-  pinMode(ECHO_PIN, INPUT);
 
-  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;); // Don't proceed, loop forever
+  // Initialize the SD card
+  Serial.println(F("Initializing SD card..."));
+  if (!SD.begin(SD_CS)) {
+    Serial.println(F("Card failed, or not present"));
+    while (1); // Don't proceed, loop forever
+  }
+  Serial.println(F("SD card initialized."));
+  
+  // Open the log file in write mode to initialize it and write the column headers
+  logFile = SD.open("log.csv", FILE_WRITE);
+  if (logFile) {
+    if (logFile.size() == 0) {
+      logFile.println("Type,Timestamp");
+      Serial.println(F("Log file created and headers written."));
+    }
+    logFile.close();
+  } else {
+    Serial.println(F("Error opening log file"));
   }
 
-  // Initial display setup
-  display.clearDisplay();
-  display.setTextSize(2);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(10, 10);
-  display.println(F("Poster Counter"));
-  display.display();
-  delay(5000); // Pause for 5 seconds
-  updateDisplay();
+  // Initialize the ultrasonic sensors
+  Serial.println(F("Initializing ultrasonic sensors..."));
+
+  // Initialize the LED pin
+  pinMode(LED_PIN, OUTPUT);
 }
 
 void loop() {
-  // Clear the trigger pin
-  digitalWrite(TRIG_PIN, LOW);
-  delayMicroseconds(2);
+  unsigned long currentTime = millis() / 1000; // Get current time in seconds since the Arduino was powered on
 
-  // Set the trigger pin HIGH for 10 microseconds
-  digitalWrite(TRIG_PIN, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TRIG_PIN, LOW);
+  // Read distances from ultrasonic sensors
+  int distanceLeft = sonarLeft.ping_cm();
+  int distanceRight = sonarRight.ping_cm();
 
-  // Read the echo pin, and calculate distance
-  long duration = pulseIn(ECHO_PIN, HIGH);
-  long distance = duration * 0.034 / 2;
-
-  // Check if an object is detected within a certain range (e.g., 10 cm)
-  if (distance < 10 && distance > 0) {
-    objectDetected = true;
-  } else {
-    objectDetected = false;
+  // Check for sensor triggers and update timestamps
+  if (distanceLeft < 50) {
+    lastLeftTrigger = millis();
+  }
+  if (distanceRight < 50) {
+    lastRightTrigger = millis();
   }
 
-  // Count entrances and exits
-  if (objectDetected && !previousObjectDetected) {
-    enterCount++;
-    updateDisplay();
-  } else if (!objectDetected && previousObjectDetected) {
-    exitCount++;
-    updateDisplay();
+  // Detect exit: left sensor triggered first, then right sensor
+  if (lastLeftTrigger != 0 && lastRightTrigger != 0 && lastLeftTrigger < lastRightTrigger) {
+    logEvent("Exit", currentTime);
+    peopleCount--;
+    blinkLED(2); // Blink LED twice for exit
+    delay(1000); // Debounce delay
+    lastLeftTrigger = 0;
+    lastRightTrigger = 0;
   }
 
-  previousObjectDetected = objectDetected;
+  // Detect entrance: right sensor triggered first, then left sensor
+  else if (lastLeftTrigger != 0 && lastRightTrigger != 0 && lastRightTrigger < lastLeftTrigger) {
+    logEvent("Entrance", currentTime);
+    peopleCount++;
+    blinkLED(1); // Blink LED once for entrance
+    delay(1000); // Debounce delay
+    lastLeftTrigger = 0;
+    lastRightTrigger = 0;
+  }
 
-  delay(100); // Small delay to avoid bouncing
+  delay(100);
 }
 
-void updateDisplay() {
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setCursor(0, 0);
-  display.println(F("Enter Count:"));
-  display.setCursor(0, 10);
-  display.print(enterCount);
-  display.setCursor(0, 20);
-  display.println(F("Exit Count:"));
-  display.setCursor(0, 30);
-  display.print(exitCount);
-  display.display();
+void logEvent(String eventType, unsigned long timestamp) {
+  logFile = SD.open("data.csv", FILE_WRITE);
+  if (logFile) {
+    logFile.print(eventType);
+    logFile.print(",");
+    logFile.println(timestamp);
+    logFile.close();
+    Serial.print("Logged: ");
+    Serial.print(eventType);
+    Serial.print(", Time: ");
+    Serial.println(timestamp);
+  } else {
+    Serial.println("Error opening log file");
+  }
+}
+
+void blinkLED(int times) {
+  for (int i = 0; i < times; i++) {
+    digitalWrite(LED_PIN, HIGH); // Turn the LED on
+    delay(200); // Wait for 200 milliseconds
+    digitalWrite(LED_PIN, LOW); // Turn the LED off
+    delay(200); // Wait for 200 milliseconds
+  }
 }
