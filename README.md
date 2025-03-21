@@ -17,19 +17,19 @@ The purpose of this project is to create an open hardware, open source device th
 This project aims to provide an open hardware solution for tracking the number of visitors to scientific posters. It uses simple components to create an effective counting mechanism for scientific events.
 
 ## Features
-- Counts entrances and exits for a row of posters.
-- Tracks visits to individual scientific posters.
+- Counts entrances and exits for a row of posters, or entrance to/from hall.
+- Tracks visits to individual scientific posters, and distance to poster.
 - Simple and cost-effective components.
 
 ## Hardware Requirements
-- Arduino
-- Extension board
-- Sonar sensor (could also use radar or other sensors)
+- Arduino MEGA processor
+- 2x Lidar  sensor
+- 1x AI Thinker radar module
 - Battery
 - OLED screen
 
 ## Assembly Instructions
-![image](https://github.com/MikeDoesScienceUX/poster-visit-counter/assets/40181678/811c8f39-6d52-42c2-b43d-6a99b961b3db)
+![image](https://i.imgur.com/AG2xPwG.png)
 1. **Connect the Sonar Sensor**
    - Connect the sonar sensor to the extension board.
 
